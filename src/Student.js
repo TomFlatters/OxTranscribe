@@ -1,7 +1,10 @@
-import { Route, Link, BrowserRouter as Router} from 'react-router-dom';
-import { RecyclerListView } from "recyclerlistview/web"
+import { Route, Link, BrowserRouter as Router } from 'react-router-dom';
 
+import SpeechRecognition from 'react-speech-recognition';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { ChatFeed, Message } from 'react-chat-ui';
+
 import './App.css';
 
 import AWS from 'aws-sdk';
@@ -22,11 +25,18 @@ class Student extends Component {
   
   constructor(){
     super()
+    this.handleOnTextAreaChange = this.handleOnTextAreaChange.bind(this);
     this.state = {
       message: "",
       submit: "",
-      history: {},
+      history: [],
+      textAreaValue: "Ask your question"
   }}
+
+  handleOnTextAreaChange(event) {
+    const value = event.target.value;
+    this.setState({textAreaValue: value});
+  }
 
   changeMessage = (e) => {
     this.setState({
@@ -87,22 +97,55 @@ sendToLex = () => {
     })
 }
 
+
+
   render(){ 
   
     const { params } = this.props.match
+    const { transcript, resetTranscript, browserSupportsSpeechRecognition } = this.props;
+
     return (
       <div className="App">
        <h1>How can I help?</h1> Message:
-       <input type="text" onChange={ this.changeMessage } value={ this.state.message } />
-       <button onClick={this.submitMessage}>Submit</button>
+       <input type="text"/>
+       <button onClick={this.submitMessage}>Submit</button>                 
 
+        <h1>Class {params.code}, {params.name}</h1> Student
         <div>
-
-        </div>                      
-
+          <button onClick={resetTranscript}>Reset</button>
+          <span>{transcript}</span>
+        </div>
+        <ChatFeed
+          messages={this.state.history} // Boolean: list of message objects
+          isTyping={this.state.is_typing} // Boolean: is the recipient typing
+          hasInputField={false} // Boolean: use our input, or use your own
+          showSenderName // show the name of the user who sent the message
+          bubblesCentered={false} //Boolean should the bubbles be centered in the feed?
+          // JSON: Custom bubble styles
+          bubbleStyles={
+            {
+              text: {
+                fontSize: 30
+              },
+              chatbubble: {
+                borderRadius: 70,
+                padding: 40
+              }
+            }
+          }
+        />
+        <textarea className="chat__textArea"  onChange={ this.changeMessage } value={ this.state.message } />
       </div>
     );
   }
 }
 
-export default Student;
+Student.propTypes = {
+  transcript: PropTypes.string,
+  resetTranscript: PropTypes.func,
+  browserSupportsSpeechRecognition: PropTypes.bool
+}
+
+export default SpeechRecognition(Student);
+
+{/* value={this.state.textAreaValue} onChange={this.handleOnTextAreaChange} */}
