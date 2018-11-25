@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react';
 import './App.css';
 import { Route, Link, BrowserRouter as Router} from 'react-router-dom';
@@ -8,7 +9,7 @@ class Nav extends Component {
         
     return(
     
-    <div class="nav">
+    <div className="nav">
 
         <div className="navspace">
         <Link style={{ textDecoration: 'none',
@@ -17,7 +18,7 @@ class Nav extends Component {
         </Link>
         </div>
       
-      <div class="nav2">
+      <div className="nav2">
       
         <div className="navspace" >
         <Link style={{ textDecoration: 'none',
