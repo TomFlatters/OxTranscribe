@@ -10,7 +10,7 @@ class Home extends Component {
         I am a ....................
         <Link to='/lecturer'>Lecturer</Link>
         <br/>
-        <Link to='/student/101/Prof'>Student</Link>
+        <Link to='/student'>Student</Link>
       </div>
     );
   }

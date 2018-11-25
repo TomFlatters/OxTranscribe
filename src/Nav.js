@@ -22,7 +22,7 @@ class Nav extends Component {
         <div className="navspace" >
         <Link style={{ textDecoration: 'none',
                         color: "white" }} 
-                        to="/students">
+                        to="/student">
         Students
         </Link>
         </div>

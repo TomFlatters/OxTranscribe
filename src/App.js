@@ -8,6 +8,7 @@ import Lecturer from './Lecturer'
 import Student from './Student'
 import Nav from './Nav'
 
+
 class App extends Component {
   render() {
     return (
@@ -17,7 +18,7 @@ class App extends Component {
           <div>
             <Route path="/" component={Nav} />
             <Route exact path="/" component={Home} />
-            <Route path="/student/:code/:name" component={Student} />
+            <Route path="/student" component={Student} />
             <Route path="/lecturer/:code" component={Lecturer} />
           </div>
         </Router>
@@ -30,3 +31,4 @@ class App extends Component {
 export default App;
 
 ReactDOM.render(<App/>, document.getElementById('root'))
+
