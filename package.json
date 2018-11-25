@@ -3,11 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "microsoft-speech-browser-sdk": "0.0.12",
+    "prop-types": "^15.6.2",
     "react": "^16.6.3",
+    "react-chat-ui": "^0.3.2",
     "react-dom": "^16.6.3",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "2.1.1"
+    "react-scripts": "2.1.1",
+    "react-speech-recognition": "^1.0.7"
   },
   "scripts": {
     "start": "react-scripts start",
