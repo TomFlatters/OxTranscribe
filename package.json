@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "aws-sdk": "^2.361.0",
+    "firebase": "^5.5.9",
     "prop-types": "^15.6.2",
     "react": "^16.6.3",
     "react-chat-ui": "^0.3.2",

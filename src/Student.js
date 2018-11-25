@@ -8,6 +8,8 @@ import { ChatFeed, Message } from 'react-chat-ui';
 import './App.css';
 
 import AWS from 'aws-sdk';
+import { fileURLToPath } from 'url';
+import firebase from 'firebase';
 // import awsmobile from './aws-exports';
 
 AWS.config.update({
@@ -22,6 +24,9 @@ let lexUserId = 'mediumBot' + Date.now()
 
 class Student extends Component {
 
+  componentDidMount(){
+    
+  }
   
   constructor(){
     super()
@@ -35,7 +40,7 @@ class Student extends Component {
 
   handleOnTextAreaChange(event) {
     const value = event.target.value;
-    this.setState({textAreaValue: value});
+    this.setState({message: value});
   }
 
   changeMessage = (e) => {
@@ -46,25 +51,23 @@ class Student extends Component {
 
   submitMessage = () => {
     this.setState({
-      submit: this.state.message
+      submit: this.state.message.trim()
     })
     console.log("submitted")
-    console.log(this.state.history)
     this.showRequest()
   }
 
   // Populates screen with user inputted message
   showRequest = () => {
-    console.log(this.state.message)
     // Add text input to messages in state
     if (this.state.message !== ""){
     let oldMessages = Object.assign([], this.state.history)
-    oldMessages.push({from: 'user', msg: this.state.message})
+    oldMessages.push(new Message({id: 0, message: this.state.message}))
     this.setState({
-        message: "",
         history: oldMessages
     })
     this.sendToLex()
+    console.log(this.state)
   }
 }
  
@@ -72,7 +75,7 @@ sendToLex = () => {
   let params = {
       botAlias: '$LATEST',
       botName: 'TutorialBot',
-      inputText: this.state.message,
+      inputText: this.state.message.trim(),
       userId: lexUserId,
   }
 
@@ -87,34 +90,64 @@ sendToLex = () => {
   }
   
   showResponse(lexResponse) {
-    console.log(lexResponse)
+
+    console.log(this.state.message)
+    console.log(lexResponse.message)
+    
     let lexMessage = lexResponse.message
     let oldMessages = Object.assign([], this.state.history)
-    oldMessages.push({from: 'bot', msg: lexMessage})
+    oldMessages.push(new Message({id: 1, message: lexMessage}))
     this.setState({
         history: oldMessages,
-        submit: ""
+        submit: "",
+        message: "",
+        text: ""
     })
 }
 
+// const Clicks = firebase.database().ref('banexams').child('clicks');
 
+// Clicks.on('value', snap => {
+//   this.setState ({
+//     clicks: snap.val(),
+//   })
+// })
+ 
+
+  componentDidMount(){
+    this.interval = setInterval(() => this.tick(), 1000);
+  }
+
+  componentWillUnmount(){
+    clearInterval(this.interval)
+  }
+  
+
+  tick = () => { 
+      const text = firebase.database().ref('transcript').child('transcript');
+      console.log(text)
+      text.on('value', snap => {
+        this.setState ({
+          text: snap.val(),
+        })
+      })
+};
 
   render(){ 
   
     const { params } = this.props.match
-    const { transcript, resetTranscript, browserSupportsSpeechRecognition } = this.props;
+
 
     return (
       <div className="App">
        <h1>How can I help?</h1> Message:
-       <input type="text"/>
+       <input type="text" onChange={(e) => {this.setState({message: e.target.value})}}/>
        <button onClick={this.submitMessage}>Submit</button>                 
 
-        <h1>Class {params.code}, {params.name}</h1> Student
-        <div>
-          <button onClick={resetTranscript}>Reset</button>
-          <span>{transcript}</span>
-        </div>
+        <h1>{params.code} {params.name}</h1>
+
+        <div id="usertranscript"> adwa {this.state.text} </div>
+        
         <ChatFeed
           messages={this.state.history} // Boolean: list of message objects
           isTyping={this.state.is_typing} // Boolean: is the recipient typing
@@ -134,18 +167,12 @@ sendToLex = () => {
             }
           }
         />
-        <textarea className="chat__textArea"  onChange={ this.changeMessage } value={ this.state.message } />
+        {/* <textarea className="chat__textArea"  onChange={ (e) => this.setState({message: e.target.value}) } value={ this.state.message } /> */}
       </div>
     );
   }
 }
 
-Student.propTypes = {
-  transcript: PropTypes.string,
-  resetTranscript: PropTypes.func,
-  browserSupportsSpeechRecognition: PropTypes.bool
-}
-
-export default SpeechRecognition(Student);
+export default Student;
 
 {/* value={this.state.textAreaValue} onChange={this.handleOnTextAreaChange} */}

@@ -1,79 +1,54 @@
 import { Route, Link, BrowserRouter as Router } from 'react-router-dom';
 
+import SpeechRecognition from 'react-speech-recognition';
+import PropTypes from 'prop-types';
+
 import React, { Component } from 'react';
 import './App.css';
 
-class Lecturer extends Component {
+import AWS from 'aws-sdk';
+import firebase from 'firebase';
 
+AWS.config.update({
+  region: 'eu-west-1', // Region
+  credentials: new AWS.CognitoIdentityCredentials({
+     IdentityPoolId: 'eu-west-1:d8d0f4ad-37d2-4715-8dc2-1a052e2592c7',
+ }),
+ });
+ 
+
+class Lecturer extends Component {
+ 
+  componentDidUpdate(){
+    firebase.database().ref("transcript").set({transcript: this.props.transcript});
+
+  }
 
   render() {
 
-    // status fields and start button in UI
-  var phraseDiv;
-  var startRecognizeOnceAsyncButton;
+    const { transcript, resetTranscript, browserSupportsSpeechRecognition } = this.props;
 
-  // subscription key and region key for speech services.
-  var subscriptionKey, regionKey;
-  var authorizationToken;
-  var SpeechSDK;
-  var recognizer;
-
-  
-    startRecognizeOnceAsyncButton = true;
-    subscriptionKey.value = "783c4377b37d4eb8b6d72615c8938426";
-    regionKey.value = "uswest";
-    phraseDiv = "";
-    startRecognizeOnceAsyncButton.addEventListener("click", function () {
-      startRecognizeOnceAsyncButton.disabled = true;
-      phraseDiv.innerHTML = "";
-
-      // if we got an authorization token, use the token. Otherwise use the provided subscription key
-      var speechConfig;
-      if (authorizationToken) {
-        speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(authorizationToken, regionKey.value);
-      } else {
-        if (subscriptionKey.value === "" || subscriptionKey.value === "subscription") {
-          alert("Please enter your Microsoft Cognitive Services Speech subscription key!");
-          return;
-        }
-        speechConfig = SpeechSDK.SpeechConfig.fromSubscription(subscriptionKey.value, regionKey.value);
-      }
-
-      speechConfig.speechRecognitionLanguage = "en-US";
-      var audioConfig  = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
-      recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
-
-      recognizer.recognizeOnceAsync(
-        function (result) {
-          startRecognizeOnceAsyncButton.disabled = false;
-          phraseDiv.innerHTML += result.text;
-          window.console.log(result);
-
-          recognizer.close();
-          recognizer = undefined;
-        },
-        function (err) {
-          startRecognizeOnceAsyncButton.disabled = false;
-          phraseDiv.innerHTML += err;
-          window.console.log(err);
-
-          recognizer.close();
-          recognizer = undefined;
-        });
-    });
-
-  
     return (
-      <div>
-
-      <script src="microsoft.cognitiveservices.speech.sdk.bundle.js"></script>
 
       <div className="App">
         Lecturer
-      </div>
+        <div>
+          <span>{transcript}</span>
+          <br/>
+          <button onClick={ () => { firebase.database().ref("transcript").set({transcript: transcript})} }> Send</button>;
+
+          <button onClick={resetTranscript}>Reset</button>
+
+        </div>
       </div>
     );
   }
 }
 
-export default Lecturer;
+Lecturer.propTypes = {
+  transcript: PropTypes.string,
+  resetTranscript: PropTypes.func,
+  browserSupportsSpeechRecognition: PropTypes.bool
+}
+
+export default SpeechRecognition(Lecturer);

@@ -7,10 +7,14 @@ class Home extends Component {
   render() {
     return (
       <div className="Home">
-        I am a ....................
-        <Link to='/lecturer'>Lecturer</Link>
-        <br/>
-        <Link to='/student'>Student</Link>
+      <div className="homebox lecturers">
+        <Link style={{ textDecoration: 'none',
+                        color: "white" }} to='/lecturer'>Lecturers</Link>
+      </div>
+      <div className="homebox students">
+        <Link style={{ textDecoration: 'none',
+                        color: "white" }} to='/student'>Students</Link>
+      </div>
       </div>
     );
   }
